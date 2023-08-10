@@ -12,10 +12,25 @@ dumpPath = 'dump.txt'
 with open(dumpPath, 'r') as dumpFile:
     instructions = [instruction.strip() for instruction in dumpFile]
 
-if (instructions[0][24:31] == "0001001"):
-    print('oi')
-
-print (type(instructions[0][25:31]))
-print(instructions[0][24:31])
+for i in range(len(instructions)):
+    if (instructions[i][25:32] == "0110111" or instructions[0][25:32] == "0010111"):
+        cycles = cycles + u
+    elif(instructions[i][25:32] == "1101111"):
+        cycles = cycles + j
+    elif(instructions[i][25:32] == "1100111" or instructions[i][25:32] == "0010011"):
+        cycles = cycles + arithmetic
+    elif(instructions[i][25:32] == ""):
+        cycles = cycles + r
+    elif(instructions[i][25:32] == ""):
+        cycles = cycles + b
+    elif(instructions[i][25:32] == ""):
+        cycles = cycles + s
+    elif(instructions[i][25:32] == ""):
+        cycles = cycles + load
+    elif(instructions[i][25:32] == ""):
+        cycles = cycles + ecall
+    
+print(instructions[0][25:32])
+print(cycles)
 # To Do ✔:
 # Make the comparisons
