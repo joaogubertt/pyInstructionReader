@@ -19,15 +19,15 @@ for i in range(len(instructions)):
         cycles = cycles + j
     elif(instructions[i][25:32] == "1100111" or instructions[i][25:32] == "0010011"):
         cycles = cycles + arithmetic
-    elif(instructions[i][25:32] == ""):
+    elif(instructions[i][25:32] == "0110011"):
         cycles = cycles + r
-    elif(instructions[i][25:32] == ""):
+    elif(instructions[i][25:32] == "1100011"):
         cycles = cycles + b
-    elif(instructions[i][25:32] == ""):
+    elif(instructions[i][25:32] == "0100011"):
         cycles = cycles + s
-    elif(instructions[i][25:32] == ""):
+    elif(instructions[i][25:32] == "0000011"):
         cycles = cycles + load
-    elif(instructions[i][25:32] == ""):
+    elif(instructions[i][25:32] == "1110011"):
         cycles = cycles + ecall
     
 print(instructions[0][25:32])
