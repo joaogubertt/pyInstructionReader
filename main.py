@@ -3,14 +3,14 @@ import os
 instructionsLoaded = 0
 cyclesA = 0
 cyclesB= 0
-tClockA = 0
-tClockB = 0
-execTime = 0    #exec time = instructionsLoaded * clock
+tClockA = float(0.00)
+tClockB = float(0.00)
+execTime = float(0.00)    #exec time = instructionsLoaded * clock
 count = 0
 cpiA = 0
 cpiB = 0
-performanceA = 0
-performanceB = 0
+performanceA = float(0.00)
+performanceB = float(0.00)
 dumpPath = 'dump.txt'
  #Remove spaces at the beginning and at the end of the string (in this case each line is a String)
 with open(dumpPath, 'r') as dumpFile:
@@ -39,7 +39,7 @@ sB = int(input("s: "))
 arithmeticB = int(input("arithmetic: "))
 ecallB = int(input("ecall: "))
 loadB = int(input("load: "))
-
+os.system('cls')
 
 def cyclesCount(u, j, arithmetic, r, b, s, load, ecall):
     cycles = 0
