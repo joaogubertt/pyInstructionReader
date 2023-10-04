@@ -172,7 +172,6 @@ def instructionReorderingNop(instructions):
     reorderedInstructions = instructions.copy()
     aux = None
     counter = 0
-    result = []
     listLastIndexItem = len(reorderedInstructions) - 1
     for i in reorderedInstructions:
         if (counter == 0):
@@ -195,11 +194,12 @@ def instructionReorderingNop(instructions):
             else:
                 counter += 1 
     #print(reorderedInstructions)
-    result = nopInsertion(reorderedInstructions)
-    print(result)
+    reorderedWithNop = nopInsertion(reorderedInstructions)
+    print(reorderedWithNop)
+    return reorderedWithNop
 
 def instructionReorderingForwarding(instructions):  
-    reorderedInstructions = instructions.copy()
+    reorderedInstructions = forwarding(instructions)
     aux = None
     counter = 0
     listLastIndexItem = len(reorderedInstructions) - 1
@@ -223,9 +223,7 @@ def instructionReorderingForwarding(instructions):
                reorderedInstructions[counter + 1] = aux
             else:
                 counter += 1 
-    #print(reorderedInstructions)
-    result = (forwarding(reorderedInstructions))
-    print(result)
+    print(reorderedInstructions)
+    return reorderedInstructions
 
-instructionReorderingNop(instructionsReaded)
-#pipelineCyclesCounter(forwarding(instructionsReaded))
+pipelineCyclesCounter(instructionReorderingForwarding(instructionsReaded))
