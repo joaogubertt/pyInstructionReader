@@ -109,17 +109,17 @@ def nopInsertion(instructions):
         if counter == 0:
             zero = 0
         elif counter == 1:
-            print("rd - 1 " + instructions[cl1][20:25] + "\n")
-            print("rs1 instrucao: " + str(counter) + " " + i[13:18] + " rs2 instrucao: "+ str(counter) + " " + i[7:12] + "\n")
+            #print("rd - 1 " + instructions[cl1][20:25] + "\n")
+            #print("rs1 instrucao: " + str(counter) + " " + i[13:18] + " rs2 instrucao: "+ str(counter) + " " + i[7:12] + "\n")
             if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
-                print("instrucao " + str(counter) + instructionsWithNop[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
-                print("  ou instrucao " + str(counter) + instructionsWithNop[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
+                #print("instrucao " + str(counter) + instructionsWithNop[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
+                #print("  ou instrucao " + str(counter) + instructionsWithNop[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
                 for ins in range(2):
                     instructionsWithNop.insert(nopCounter, nopInstruction)
                     nopCounter += 1
         else:
-            print("rd - 1 " + instructions[cl1][20:25])
-            print("rd - 2 " + instructions[cl2][20:25])
+            #print("rd - 1 " + instructions[cl1][20:25])
+            #print("rd - 2 " + instructions[cl2][20:25])
             if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
                 for ins in range(2):
                     instructionsWithNop.insert(nopCounter, nopInstruction)
@@ -150,8 +150,8 @@ def forwarding(instructions):
     for i in instructions:
         if counter != 0:
             if counter == 1:
-                print("instrucao " + str(counter) + instructionsWithForwarding[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
-                print("  ou instrucao " + str(counter) + instructionsWithForwarding[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
+                #print("instrucao " + str(counter) + instructionsWithForwarding[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
+                #print("  ou instrucao " + str(counter) + instructionsWithForwarding[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
                 if instructions[counter][13:18] == instructionsWithForwarding[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithForwarding[nopCounter-1][20:25] and instructionsWithForwarding[counter-1][25:32] == "0000011":
                     for ins in range(2):
                         instructionsWithForwarding.insert(nopCounter, nopInstruction)
@@ -166,14 +166,15 @@ def forwarding(instructions):
     print(counter, " || ", nopCounter, "\n")
     return instructionsWithForwarding
 
-def instructionReordering(instructions):
+def instructionReorderingNop(instructions):
     #Aqui o conceito é basicamente mudar as instruções de local de modo a diminuir a quantidade de NOP  
     #Aqui não é utilizado o conceito de forwarding
     reorderedInstructions = instructions.copy()
     aux = None
+    counter = 0
+    result = []
     listLastIndexItem = len(reorderedInstructions) - 1
     for i in reorderedInstructions:
-        counter = 0
         if (counter == 0):
             zero = 0
         elif(counter == listLastIndexItem):
@@ -192,10 +193,39 @@ def instructionReordering(instructions):
                reorderedInstructions[counter] = reorderedInstructions[counter + 1] 
                reorderedInstructions[counter + 1] = aux
             else:
-                counter += 1
-            
-            print(reorderedInstructions)
-            
+                counter += 1 
+    #print(reorderedInstructions)
+    result = nopInsertion(reorderedInstructions)
+    print(result)
 
-#instructionReordering()
-pipelineCyclesCounter(forwarding(instructionsReaded))
+def instructionReorderingForwarding(instructions):  
+    reorderedInstructions = instructions.copy()
+    aux = None
+    counter = 0
+    listLastIndexItem = len(reorderedInstructions) - 1
+    for i in reorderedInstructions:
+        if (counter == 0):
+            zero = 0
+        elif(counter == listLastIndexItem):
+            zero = 0
+        else:
+            if (reorderedInstructions[counter][13:18] == reorderedInstructions[counter-1][20:25] or reorderedInstructions[counter][7:12] == reorderedInstructions[counter-1][20:25]):
+               aux = reorderedInstructions[counter]
+               reorderedInstructions[counter] = reorderedInstructions[counter + 1] 
+               reorderedInstructions[counter + 1] = aux
+               aux = reorderedInstructions[counter + 1]
+               reorderedInstructions[counter + 1] = reorderedInstructions[counter + 2] 
+               reorderedInstructions[counter + 2] = aux
+               counter = - 1
+            elif (reorderedInstructions[counter][13:18] == reorderedInstructions[counter-2][20:25] or reorderedInstructions[counter][7:12] == reorderedInstructions[counter-2][20:25] and counter > 1):
+               aux = reorderedInstructions[counter]
+               reorderedInstructions[counter] = reorderedInstructions[counter + 1] 
+               reorderedInstructions[counter + 1] = aux
+            else:
+                counter += 1 
+    #print(reorderedInstructions)
+    result = (forwarding(reorderedInstructions))
+    print(result)
+
+instructionReorderingNop(instructionsReaded)
+#pipelineCyclesCounter(forwarding(instructionsReaded))
