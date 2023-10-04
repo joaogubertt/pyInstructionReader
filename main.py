@@ -20,9 +20,9 @@ dumpPath = 'dump.txt'
 typeInstruction = []
 
 with open(dumpPath, 'r') as dumpFile:
-    instructions = [instruction.strip() for instruction in dumpFile]
+    instructionsReaded = [instruction.strip() for instruction in dumpFile]
 
-def cyclesCount(u, j, arithmetic, r, b, s, load, ecall):
+def cyclesCount(u, j, arithmetic, r, b, s, load, ecall, instructions):
     print("Organização A:")
     tClockA = int(input("Tempo de Clock: "))
     rA = int(input("r: "))
@@ -74,7 +74,7 @@ def cyclesCount(u, j, arithmetic, r, b, s, load, ecall):
             typeInstruction.append('e')
     return cycles
 
-def monocycleCalc(uA, jA, arithmeticA, rA, bA, sA, loadA, ecallA, uB, jB, arithmeticB, rB, bB, sB, loadB, ecallB):
+def monocycleCalc(uA, jA, arithmeticA, rA, bA, sA, loadA, ecallA, uB, jB, arithmeticB, rB, bB, sB, loadB, ecallB, instructions):
     cyclesA = cyclesCount(uA, jA, arithmeticA, rA, bA, sA, loadA, ecallA)
     cyclesB = cyclesCount(uB, jB, arithmeticB, rB, bB, sB, loadB, ecallB)
     instructionsLoaded = len(instructions)
@@ -93,7 +93,7 @@ def monocycleCalc(uA, jA, arithmeticA, rA, bA, sA, loadA, ecallA, uB, jB, arithm
     else:
         print("Ambas organizações possuem o mesmo desempenho")
     
-def nopInsertion():
+def nopInsertion(instructions):
     #instructions[i][25:32] == "0100011"
     #13:18 != 20:25 13:18!=20:25
     #rd = 20:25
@@ -143,7 +143,7 @@ def pipelineCyclesCounter(instructionsSet):
     print("Tempo de execução do programa na arquitetura pipeline: ", tcpu)
     return tcpu
 
-def forwarding():
+def forwarding(instructions):
     instructionsWithForwarding = instructions.copy()
     counter = 0
     nopCounter = 0
@@ -166,4 +166,36 @@ def forwarding():
     print(counter, " || ", nopCounter, "\n")
     return instructionsWithForwarding
 
-pipelineCyclesCounter(forwarding())
+def instructionReordering(instructions):
+    #Aqui o conceito é basicamente mudar as instruções de local de modo a diminuir a quantidade de NOP  
+    #Aqui não é utilizado o conceito de forwarding
+    reorderedInstructions = instructions.copy()
+    aux = None
+    listLastIndexItem = len(reorderedInstructions) - 1
+    for i in reorderedInstructions:
+        counter = 0
+        if (counter == 0):
+            zero = 0
+        elif(counter == listLastIndexItem):
+            zero = 0
+        else:
+            if (reorderedInstructions[counter][13:18] == reorderedInstructions[counter-1][20:25] or reorderedInstructions[counter][7:12] == reorderedInstructions[counter-1][20:25]):
+               aux = reorderedInstructions[counter]
+               reorderedInstructions[counter] = reorderedInstructions[counter + 1] 
+               reorderedInstructions[counter + 1] = aux
+               aux = reorderedInstructions[counter + 1]
+               reorderedInstructions[counter + 1] = reorderedInstructions[counter + 2] 
+               reorderedInstructions[counter + 2] = aux
+               counter = - 1
+            elif (reorderedInstructions[counter][13:18] == reorderedInstructions[counter-2][20:25] or reorderedInstructions[counter][7:12] == reorderedInstructions[counter-2][20:25] and counter > 1):
+               aux = reorderedInstructions[counter]
+               reorderedInstructions[counter] = reorderedInstructions[counter + 1] 
+               reorderedInstructions[counter + 1] = aux
+            else:
+                counter += 1
+            
+            print(reorderedInstructions)
+            
+
+#instructionReordering()
+pipelineCyclesCounter(forwarding(instructionsReaded))
