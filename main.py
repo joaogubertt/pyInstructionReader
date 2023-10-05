@@ -111,22 +111,24 @@ def nopInsertion(instructions):
         elif counter == 1:
             #print("rd - 1 " + instructions[cl1][20:25] + "\n")
             #print("rs1 instrucao: " + str(counter) + " " + i[13:18] + " rs2 instrucao: "+ str(counter) + " " + i[7:12] + "\n")
-            if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
-                #print("instrucao " + str(counter) + instructionsWithNop[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
-                #print("  ou instrucao " + str(counter) + instructionsWithNop[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
-                for ins in range(2):
-                    instructionsWithNop.insert(nopCounter, nopInstruction)
-                    nopCounter += 1
+            if(i[counter][25:32] != "0100011" and i[counter][25:32] != "1100011"):
+                if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
+                    #print("instrucao " + str(counter) + instructionsWithNop[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
+                    #print("  ou instrucao " + str(counter) + instructionsWithNop[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithNop[counter-1][20:25])
+                    for ins in range(2):
+                        instructionsWithNop.insert(nopCounter, nopInstruction)
+                        nopCounter += 1
         else:
             #print("rd - 1 " + instructions[cl1][20:25])
             #print("rd - 2 " + instructions[cl2][20:25])
-            if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
-                for ins in range(2):
-                    instructionsWithNop.insert(nopCounter, nopInstruction)
+            if(i[counter][25:32] != "0100011" and i[counter][25:32] != "1100011"):
+                if instructions[counter][13:18] == instructionsWithNop[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-1][20:25]:
+                    for ins in range(2):
+                        instructionsWithNop.insert(nopCounter, nopInstruction)
+                        nopCounter += 1
+                if instructions[counter][13:18] == instructionsWithNop[nopCounter-2][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-2][20:25]:
+                    instructionsWithNop.insert(nopCounter, nopInstruction)  
                     nopCounter += 1
-            if instructions[counter][13:18] == instructionsWithNop[nopCounter-2][20:25] or instructions[counter][7:12] == instructionsWithNop[nopCounter-2][20:25]:
-                instructionsWithNop.insert(nopCounter, nopInstruction)  
-                nopCounter += 1
         counter += 1
         nopCounter += 1
     print(instructionsWithNop)
@@ -152,12 +154,11 @@ def forwarding(instructions):
             if counter == 1:
                 #print("instrucao " + str(counter) + instructionsWithForwarding[counter][13:18] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
                 #print("  ou instrucao " + str(counter) + instructionsWithForwarding[counter][7:12] + " = " + "instruccao " + str(counter -1) + instructionsWithForwarding[counter-1][20:25])
-                if instructions[counter][13:18] == instructionsWithForwarding[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithForwarding[nopCounter-1][20:25] and instructionsWithForwarding[counter-1][25:32] == "0000011":
-                    for ins in range(2):
-                        instructionsWithForwarding.insert(nopCounter, nopInstruction)
-                        nopCounter += 1
+                if ((instructions[counter][13:18] == instructionsWithForwarding[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithForwarding[nopCounter-1][20:25]) and instructionsWithForwarding[counter-1][25:32] == "0000011"):
+                    instructionsWithForwarding.insert(nopCounter, nopInstruction)
+                    nopCounter += 1
             else:
-                if instructions[counter][13:18] == instructionsWithForwarding[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithForwarding[nopCounter-1][20:25] and instructionsWithForwarding[counter-1][25:32] == "0000011":
+                if ((instructions[counter][13:18] == instructionsWithForwarding[nopCounter-1][20:25] or instructions[counter][7:12] == instructionsWithForwarding[nopCounter-1][20:25]) and instructionsWithForwarding[counter-1][25:32] == "0000011"):
                     instructionsWithForwarding.insert(nopCounter, nopInstruction)
                     nopCounter += 1
         counter += 1
@@ -194,12 +195,15 @@ def instructionReorderingNop(instructions):
             else:
                 counter += 1 
     #print(reorderedInstructions)
+    print("aqui1 " + str(len(reorderedInstructions)), "\n")
     reorderedWithNop = nopInsertion(reorderedInstructions)
+    print("aqui2 " + str(len(reorderedInstructions)), "\n")
     print(reorderedWithNop)
     return reorderedWithNop
 
 def instructionReorderingForwarding(instructions):  
     reorderedInstructions = forwarding(instructions)
+    print(len(reorderedInstructions), "\n")
     aux = None
     counter = 0
     listLastIndexItem = len(reorderedInstructions) - 1
@@ -224,6 +228,13 @@ def instructionReorderingForwarding(instructions):
             else:
                 counter += 1 
     print(reorderedInstructions)
+    print(len(reorderedInstructions), "\n")
     return reorderedInstructions
 
-pipelineCyclesCounter(instructionReorderingForwarding(instructionsReaded))
+'''pipelineCyclesCounter(forwarding(instructionsReaded))'''
+#instructionReorderingNop(instructionsReaded)
+#pipelineCyclesCounter(instructionReorderingForwarding(instructionsReaded))
+
+pipelineCyclesCounter(nopInsertion(instructionsReaded))
+pipelineCyclesCounter(forwarding(instructionsReaded))
+pipelineCyclesCounter(instructionReorderingNop(instructionsReaded))
